@@ -2,57 +2,77 @@ package account
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 
 	"github.com/go-kit/log"
+	"github.com/jmoiron/sqlx"
 )
 
 var ErrRepo = errors.New("unable to handle Repo Request")
 
 type repo struct {
-	db     *sql.DB
+	db     *sqlx.DB
 	logger log.Logger
 }
 
-func NewRepo(db *sql.DB, logger log.Logger) Repository {
+func NewRepo(db *sqlx.DB, logger log.Logger) Repository {
 	return &repo{
 		db:     db,
 		logger: log.With(logger, "repo", "sql"),
 	}
 }
 
-func (repo *repo) CreateUser(ctx context.Context, user User) error {
+func (repo *repo) CreateUser(ctx context.Context, user User) (User, error) {
 	sql := `
 		INSERT INTO users (id, email, password)
 		VALUES ($1, $2, $3)`
 
 	if user.Email == "" || user.Password == "" {
-		return ErrRepo
+		return user, ErrRepo
 	}
 
+	println("\nUSER: ", user.ID, user.Email, user.Password, "\n")
 	_, err := repo.db.ExecContext(ctx, sql, user.ID, user.Email, user.Password)
 	if err != nil {
-		return err
+		return user, err
 	}
-	return nil
+	return user, nil
 }
 
-func (repo *repo) GetUser(ctx context.Context, id string) (string, error) {
-	var email string
-	err := repo.db.QueryRow("SELECT email FROM users WHERE id=$1", id).Scan(&email)
+func (repo *repo) GetUser(ctx context.Context, id string) (User, error) {
+	user := User{}
+	rows, err := repo.db.Queryx("SELECT * FROM users WHERE id=$1", id)
 	if err != nil {
-		return "", ErrRepo
+		return user, ErrRepo
+	}
+	for rows.Next() {
+		err := rows.StructScan(&user)
+		if err != nil {
+			return user, ErrRepo
+		}
 	}
 
-	return email, nil
+	return user, nil
 }
 
-func (repo *repo) DeleteUser(ctx context.Context, id string) error {
+func (repo *repo) DeleteUser(ctx context.Context, id string) (User, error) {
+	user := User{}
+	user.ID = id
+	rows, read_err := repo.db.Queryx("SELECT * FROM users WHERE id=$1", id)
+	if read_err != nil {
+		return user, ErrRepo
+	}
+	for rows.Next() {
+		err := rows.StructScan(&user)
+		if err != nil {
+			return user, ErrRepo
+		}
+	}
+
 	sql := `DELETE FROM users WHERE id=$1`
-	_, err := repo.db.ExecContext(ctx, sql, id)
-	if err != nil {
-		return err
+	_, write_err := repo.db.ExecContext(ctx, sql, id)
+	if write_err != nil {
+		return user, write_err
 	}
-	return nil
+	return user, nil
 }

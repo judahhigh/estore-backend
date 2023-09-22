@@ -23,18 +23,24 @@ func MakeEndpoints(s Service) Endpoints {
 func makeCreateUserEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(CreateUserRequest)
-		ok, err := s.CreateUser(ctx, req.Email, req.Password)
-		return CreateUserResponse{Ok: ok}, err
+		user, err := s.CreateUser(ctx, req.Email, req.Password)
+		return CreateUserResponse{
+			Id:       user.ID,
+			Email:    user.Email,
+			Password: user.Password,
+		}, err
 	}
 }
 
 func makeGetUserEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(GetUserRequest)
-		email, err := s.GetUser(ctx, req.Id)
+		user, err := s.GetUser(ctx, req.Id)
 
 		return GetUserResponse{
-			Email: email,
+			Id:       user.ID,
+			Email:    user.Email,
+			Password: user.Password,
 		}, err
 	}
 }
@@ -42,7 +48,11 @@ func makeGetUserEndpoint(s Service) endpoint.Endpoint {
 func makeDeleteUserEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(DeleteUserRequest)
-		ok, err := s.DeleteUser(ctx, req.Id)
-		return DeleteUserResponse{Ok: ok}, err
+		user, err := s.DeleteUser(ctx, req.Id)
+		return DeleteUserResponse{
+			Id:       user.ID,
+			Email:    user.Email,
+			Password: user.Password,
+		}, err
 	}
 }

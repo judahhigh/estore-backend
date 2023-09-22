@@ -14,21 +14,27 @@ type (
 		Password string `json:"password"`
 	}
 	CreateUserResponse struct {
-		Ok string `json:"ok"`
+		Id       string `json:"id"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	GetUserRequest struct {
 		Id string `json:"id"`
 	}
 	GetUserResponse struct {
-		Email string `json:"email"`
+		Id       string `json:"id"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 
 	DeleteUserRequest struct {
 		Id string `json:"id"`
 	}
 	DeleteUserResponse struct {
-		Ok string `json:"ok"`
+		Id       string `json:"id"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
 	}
 )
 

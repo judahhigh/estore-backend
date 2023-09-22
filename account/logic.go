@@ -20,7 +20,7 @@ func NewService(rep Repository, logger log.Logger) Service {
 	}
 }
 
-func (s service) CreateUser(ctx context.Context, email string, password string) (string, error) {
+func (s service) CreateUser(ctx context.Context, email string, password string) (User, error) {
 	logger := log.With(s.logger, "method", "CreateUser")
 
 	uuid, _ := uuid.NewV4()
@@ -31,40 +31,42 @@ func (s service) CreateUser(ctx context.Context, email string, password string) 
 		Password: password,
 	}
 
-	if err := s.repository.CreateUser(ctx, user); err != nil {
+	user, err := s.repository.CreateUser(ctx, user)
+	if err != nil {
 		level.Error(logger).Log("err", err)
-		return "", err
+		return user, err
 	}
 
 	logger.Log("create user", id)
 
-	return "Success", nil
+	return user, nil
 }
 
-func (s service) GetUser(ctx context.Context, id string) (string, error) {
+func (s service) GetUser(ctx context.Context, id string) (User, error) {
 	logger := log.With(s.logger, "method", "GetUser")
 
-	email, err := s.repository.GetUser(ctx, id)
+	user, err := s.repository.GetUser(ctx, id)
 
 	if err != nil {
 		level.Error(logger).Log("err", err)
-		return "", err
+		return user, err
 	}
 
 	logger.Log("Get user", id)
 
-	return email, nil
+	return user, nil
 }
 
-func (s service) DeleteUser(ctx context.Context, id string) (string, error) {
+func (s service) DeleteUser(ctx context.Context, id string) (User, error) {
 	logger := log.With(s.logger, "method", "DeleteUser")
 
-	if err := s.repository.DeleteUser(ctx, id); err != nil {
+	user, err := s.repository.DeleteUser(ctx, id)
+	if err != nil {
 		level.Error(logger).Log("err", err)
-		return "", err
+		return user, err
 	}
 
 	logger.Log("delete user", id)
 
-	return "Success", nil
+	return user, nil
 }

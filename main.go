@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"flag"
 	"fmt"
 	"strconv"
@@ -21,6 +20,8 @@ import (
 	"github.com/joho/godotenv"
 
 	"estore-backend/account"
+
+	"github.com/jmoiron/sqlx"
 )
 
 func getVar(varName string) (string, bool) {
@@ -94,7 +95,7 @@ func main() {
 	level.Info(logger).Log("msg", "service started")
 	defer level.Info(logger).Log("msg", "service ended")
 
-	var db *sql.DB
+	var db *sqlx.DB
 	{
 		var err error
 
@@ -105,7 +106,7 @@ func main() {
 		}
 		println(psqlInfo)
 
-		db, err = sql.Open("postgres", psqlInfo)
+		db, err = sqlx.Open("postgres", psqlInfo)
 		if err != nil {
 			db.Close()
 			level.Error(logger).Log("exit", err)
