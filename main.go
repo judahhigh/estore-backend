@@ -83,7 +83,7 @@ func main() {
 		level.Error(logger).Log("exit", err)
 		os.Exit(-1)
 	}
-	port, result := getVar("DB_PORT")
+	port, result := getVar("SERVICE_PORT")
 	if !result {
 		level.Error(logger).Log("exit", err)
 		os.Exit(-1)
@@ -98,9 +98,6 @@ func main() {
 	{
 		var err error
 
-		// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		// 	"password=%s dbname=%s sslmode=disable",
-		// 	host, port, user, password, dbname)
 		psqlInfo, result := getDBConn()
 		if !result {
 			level.Error(logger).Log("exit", err)
