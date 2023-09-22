@@ -18,9 +18,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"estore-backend/account"
-
 	"github.com/joho/godotenv"
+
+	"estore-backend/account"
 )
 
 func getVar(varName string) (string, bool) {

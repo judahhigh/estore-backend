@@ -47,3 +47,12 @@ func (repo *repo) GetUser(ctx context.Context, id string) (string, error) {
 
 	return email, nil
 }
+
+func (repo *repo) DeleteUser(ctx context.Context, id string) error {
+	sql := `DELETE FROM users WHERE id=$1`
+	_, err := repo.db.ExecContext(ctx, sql, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

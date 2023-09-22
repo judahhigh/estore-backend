@@ -9,12 +9,14 @@ import (
 type Endpoints struct {
 	CreateUser endpoint.Endpoint
 	GetUser    endpoint.Endpoint
+	DeleteUser endpoint.Endpoint
 }
 
 func MakeEndpoints(s Service) Endpoints {
 	return Endpoints{
 		CreateUser: makeCreateUserEndpoint(s),
 		GetUser:    makeGetUserEndpoint(s),
+		DeleteUser: makeDeleteUserEndpoint(s),
 	}
 }
 
@@ -34,5 +36,13 @@ func makeGetUserEndpoint(s Service) endpoint.Endpoint {
 		return GetUserResponse{
 			Email: email,
 		}, err
+	}
+}
+
+func makeDeleteUserEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(DeleteUserRequest)
+		ok, err := s.DeleteUser(ctx, req.Id)
+		return DeleteUserResponse{Ok: ok}, err
 	}
 }

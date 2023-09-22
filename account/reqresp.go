@@ -23,6 +23,13 @@ type (
 	GetUserResponse struct {
 		Email string `json:"email"`
 	}
+
+	DeleteUserRequest struct {
+		Id string `json:"id"`
+	}
+	DeleteUserResponse struct {
+		Ok string `json:"ok"`
+	}
 )
 
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
@@ -42,6 +49,15 @@ func decodeEmailReq(ctx context.Context, r *http.Request) (interface{}, error) {
 	var req GetUserRequest
 	vars := mux.Vars(r)
 	req = GetUserRequest{
+		Id: vars["id"],
+	}
+	return req, nil
+}
+
+func decodeDeleteUserReq(ctx context.Context, r *http.Request) (interface{}, error) {
+	var req DeleteUserRequest
+	vars := mux.Vars(r)
+	req = DeleteUserRequest{
 		Id: vars["id"],
 	}
 	return req, nil

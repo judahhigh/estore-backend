@@ -55,3 +55,16 @@ func (s service) GetUser(ctx context.Context, id string) (string, error) {
 
 	return email, nil
 }
+
+func (s service) DeleteUser(ctx context.Context, id string) (string, error) {
+	logger := log.With(s.logger, "method", "DeleteUser")
+
+	if err := s.repository.DeleteUser(ctx, id); err != nil {
+		level.Error(logger).Log("err", err)
+		return "", err
+	}
+
+	logger.Log("delete user", id)
+
+	return "Success", nil
+}
