@@ -36,6 +36,17 @@ type (
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
+
+	UpdateUserRequest struct {
+		Id       string `json:"id"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	UpdateUserResponse struct {
+		Id       string `json:"id"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
 )
 
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
@@ -65,6 +76,15 @@ func decodeDeleteUserReq(ctx context.Context, r *http.Request) (interface{}, err
 	vars := mux.Vars(r)
 	req = DeleteUserRequest{
 		Id: vars["id"],
+	}
+	return req, nil
+}
+
+func decodeUpdateUserReq(ctx context.Context, r *http.Request) (interface{}, error) {
+	var req UpdateUserRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		return nil, err
 	}
 	return req, nil
 }

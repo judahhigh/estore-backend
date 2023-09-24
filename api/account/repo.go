@@ -76,3 +76,21 @@ func (repo *repo) DeleteUser(ctx context.Context, id string) (User, error) {
 	}
 	return user, nil
 }
+
+func (repo *repo) UpdateUser(ctx context.Context, user User) (User, error) {
+	// Check that actual values are being used to update data
+	if user.Email == "" || user.Password == "" {
+		return user, ErrRepo
+	}
+
+	// Attempt to perform the update.
+	sql := `
+		UPDATE users SET email=$1, password=$2 WHERE id=$3`
+
+	println("\nUSER: ", user.ID, user.Email, user.Password, "\n")
+	_, err := repo.db.ExecContext(ctx, sql, user.Email, user.Password, user.ID)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}

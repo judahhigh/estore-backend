@@ -70,3 +70,23 @@ func (s service) DeleteUser(ctx context.Context, id string) (User, error) {
 
 	return user, nil
 }
+
+func (s service) UpdateUser(ctx context.Context, id string, email string, password string) (User, error) {
+	logger := log.With(s.logger, "method", "UpdateUser")
+
+	user := User{
+		ID:       id,
+		Email:    email,
+		Password: password,
+	}
+
+	user, err := s.repository.UpdateUser(ctx, user)
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		return user, err
+	}
+
+	logger.Log("update user", id)
+
+	return user, nil
+}

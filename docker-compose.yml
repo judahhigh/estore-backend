@@ -1,8 +1,8 @@
 version: '3.9'
 services:
-  account-server:
+  account-api-server:
     build:
-      dockerfile: ./docker/account-server/Dockerfile
+      dockerfile: ./docker/account-api-server/Dockerfile
       context: .
     ports:
       - "8080:8080"

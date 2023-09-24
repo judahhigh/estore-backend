@@ -10,6 +10,7 @@ type Endpoints struct {
 	CreateUser endpoint.Endpoint
 	GetUser    endpoint.Endpoint
 	DeleteUser endpoint.Endpoint
+	UpdateUser endpoint.Endpoint
 }
 
 func MakeEndpoints(s Service) Endpoints {
@@ -17,6 +18,7 @@ func MakeEndpoints(s Service) Endpoints {
 		CreateUser: makeCreateUserEndpoint(s),
 		GetUser:    makeGetUserEndpoint(s),
 		DeleteUser: makeDeleteUserEndpoint(s),
+		UpdateUser: makeUpdateUserEndpoint(s),
 	}
 }
 
@@ -50,6 +52,18 @@ func makeDeleteUserEndpoint(s Service) endpoint.Endpoint {
 		req := request.(DeleteUserRequest)
 		user, err := s.DeleteUser(ctx, req.Id)
 		return DeleteUserResponse{
+			Id:       user.ID,
+			Email:    user.Email,
+			Password: user.Password,
+		}, err
+	}
+}
+
+func makeUpdateUserEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(UpdateUserRequest)
+		user, err := s.UpdateUser(ctx, req.Id, req.Email, req.Password)
+		return UpdateUserResponse{
 			Id:       user.ID,
 			Email:    user.Email,
 			Password: user.Password,

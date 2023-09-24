@@ -19,7 +19,7 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"estore-backend/account"
+	"estore-backend/api/account"
 
 	"github.com/jmoiron/sqlx"
 )
