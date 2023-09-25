@@ -8,3 +8,9 @@ services:
       - "8080:8080"
     extra_hosts:
       - "database:10.0.0.58"
+  auth-server:
+    build:
+      dockerfile: ./docker/auth-server/Dockerfile
+      context: .
+    ports:
+      - "8081:8081"
