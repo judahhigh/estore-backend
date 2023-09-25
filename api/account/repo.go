@@ -55,6 +55,24 @@ func (repo *repo) GetUser(ctx context.Context, id string) (User, error) {
 	return user, nil
 }
 
+func (repo *repo) GetUsers(ctx context.Context) ([]User, error) {
+	users := []User{}
+	rows, err := repo.db.Queryx("SELECT * FROM users")
+	if err != nil {
+		return users, ErrRepo
+	}
+	for rows.Next() {
+		user := User{}
+		err := rows.StructScan(&user)
+		if err != nil {
+			return users, ErrRepo
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}
+
 func (repo *repo) DeleteUser(ctx context.Context, id string) (User, error) {
 	user := User{}
 	user.ID = id

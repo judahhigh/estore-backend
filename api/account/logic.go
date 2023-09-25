@@ -57,6 +57,21 @@ func (s service) GetUser(ctx context.Context, id string) (User, error) {
 	return user, nil
 }
 
+func (s service) GetUsers(ctx context.Context) ([]User, error) {
+	logger := log.With(s.logger, "method", "GetUsers")
+
+	users, err := s.repository.GetUsers(ctx)
+
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		return users, err
+	}
+
+	logger.Log("Get users")
+
+	return users, nil
+}
+
 func (s service) DeleteUser(ctx context.Context, id string) (User, error) {
 	logger := log.With(s.logger, "method", "DeleteUser")
 

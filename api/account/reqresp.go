@@ -28,6 +28,11 @@ type (
 		Password string `json:"password"`
 	}
 
+	GetUsersRequest  struct{}
+	GetUsersResponse struct {
+		Users []GetUserResponse `json:"users"`
+	}
+
 	DeleteUserRequest struct {
 		Id string `json:"id"`
 	}
@@ -86,5 +91,10 @@ func decodeUpdateUserReq(ctx context.Context, r *http.Request) (interface{}, err
 	if err != nil {
 		return nil, err
 	}
+	return req, nil
+}
+
+func decodeGetUsersReq(ctx context.Context, r *http.Request) (interface{}, error) {
+	var req GetUsersRequest
 	return req, nil
 }

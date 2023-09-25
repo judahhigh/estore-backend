@@ -9,6 +9,7 @@ import (
 type Endpoints struct {
 	CreateUser endpoint.Endpoint
 	GetUser    endpoint.Endpoint
+	GetUsers   endpoint.Endpoint
 	DeleteUser endpoint.Endpoint
 	UpdateUser endpoint.Endpoint
 }
@@ -19,6 +20,7 @@ func MakeEndpoints(s Service) Endpoints {
 		GetUser:    makeGetUserEndpoint(s),
 		DeleteUser: makeDeleteUserEndpoint(s),
 		UpdateUser: makeUpdateUserEndpoint(s),
+		GetUsers:   makeGetUsersEndpoint(s),
 	}
 }
 
@@ -43,6 +45,24 @@ func makeGetUserEndpoint(s Service) endpoint.Endpoint {
 			Id:       user.ID,
 			Email:    user.Email,
 			Password: user.Password,
+		}, err
+	}
+}
+
+func makeGetUsersEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		users, err := s.GetUsers(ctx)
+		users_responses := []GetUserResponse{}
+		for _, user := range users {
+			resp := GetUserResponse{
+				Id:       user.ID,
+				Email:    user.Email,
+				Password: user.Password,
+			}
+			users_responses = append(users_responses, resp)
+		}
+		return GetUsersResponse{
+			Users: users_responses,
 		}, err
 	}
 }
