@@ -72,12 +72,6 @@ func (s accountService) Register(ctx context.Context, email string, password str
 		return user, err
 	}
 	defer resp.Body.Close()
-	// resp, err := http.Post(conn_string, "application/json", response_body)
-	// if err != nil {
-	// 	level.Error(logger).Log("err", err)
-	// 	return user, err
-	// }
-	// defer resp.Body.Close()
 
 	// Deserialize the body of the response into the user to return to the client
 	body, err := io.ReadAll(resp.Body)
@@ -94,8 +88,60 @@ func (s accountService) Register(ctx context.Context, email string, password str
 
 func (s accountService) Login(ctx context.Context, email string, password string) (User, error) {
 	logger := log.With(s.logger, "method", "Register")
+
+	// User to be filled with response
+	var user User
+
+	// Get the authorization header from the request and pass through to the api
+	r := ctx.Value(ctxRequestKey{}).(*http.Request)
+	auth := r.Header.Get("Authorization")
+
+	// Load the account api server details
+	var server_details AccountApiServerDetails
+	err := server_details.Load()
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		return user, err
+	}
+
+	// Get a list of users and determine if the user exists or not
+	conn_string := fmt.Sprintf("%s://%s:%s/user", server_details.scheme, server_details.host, server_details.port)
+	req, err := http.NewRequest("GET", conn_string, nil)
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		return user, err
+	}
+	req.Header.Add("Authorization", auth)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		return user, err
+	}
+	defer resp.Body.Close()
+
+	type Users struct {
+		Users []User `json:"users"`
+	}
+	var current_users Users
+	// Deserialize the users into a list of users
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		return user, err
+	}
+	json.Unmarshal(body, &current_users)
+
+	for _, test_user := range current_users.Users {
+		if test_user.Email == email && test_user.Password == password {
+			user.ID = test_user.ID
+			user.Email = test_user.Email
+			user.Password = test_user.Password
+		}
+	}
+
 	logger.Log("Logged in user", email)
-	return User{}, nil
+	return user, nil
 }
 
 func (s accountService) Refresh(ctx context.Context, email string, password string) (User, error) {

@@ -65,7 +65,7 @@ func decRegisterReq(ctx context.Context, r *http.Request) (interface{}, error) {
 }
 
 func decLoginReq(ctx context.Context, r *http.Request) (interface{}, error) {
-	var req RegisterUserRequest
+	var req LoginUserRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func decLoginReq(ctx context.Context, r *http.Request) (interface{}, error) {
 }
 
 func decRefreshReq(ctx context.Context, r *http.Request) (interface{}, error) {
-	var req RegisterUserRequest
+	var req RefreshUserRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err
